@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AgriSmart - AI Crop Recommendation</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div class="logo">
+            🌱
+        </div>
+
+        <h1>
+            AgriSmart
+        </h1>
+
+        <p>
+            AI-Powered Crop Recommendation System
+        </p>
+
+    </header>
+
+
+    <!-- STATISTICS -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <span>🎯</span>
+
+            <h3>
+                {{ accuracy }}%
+            </h3>
+
+            <p>
+                Model Accuracy
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>🌾</span>
+
+            <h3>
+                {{ num_crops }}
+            </h3>
+
+            <p>
+                Crop Classes
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>📊</span>
+
+            <h3>
+                {{ dataset_size }}
+            </h3>
+
+            <p>
+                Training Samples
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- PREDICTION CARD -->
+
+    <main class="card">
+
+        <h2>
+            🌾 Crop Recommendation
+        </h2>
+
+        <p class="description">
+            Enter soil and weather conditions
+            to find a suitable crop.
+        </p>
+
+
+        <form method="POST">
+
+            <div class="grid">
+
+
+                <!-- Nitrogen -->
+
+                <div class="input-box">
+
+                    <label>
+                        Nitrogen (N)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="nitrogen"
+                        placeholder="90"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Phosphorus -->
+
+                <div class="input-box">
+
+                    <label>
+                        Phosphorus (P)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="phosphorus"
+                        placeholder="42"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Potassium -->
+
+                <div class="input-box">
+
+                    <label>
+                        Potassium (K)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="potassium"
+                        placeholder="43"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Temperature -->
+
+                <div class="input-box">
+
+                    <label>
+                        Temperature (°C)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="temperature"
+                        placeholder="25"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Humidity -->
+
+                <div class="input-box">
+
+                    <label>
+                        Humidity (%)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="humidity"
+                        placeholder="80"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- pH -->
+
+                <div class="input-box">
+
+                    <label>
+                        Soil pH
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="ph"
+                        placeholder="6.5"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- Rainfall -->
+
+                <div class="input-box">
+
+                    <label>
+                        Rainfall (mm)
+                    </label>
+
+                    <input
+                        type="number"
+                        step="any"
+                        name="rainfall"
+                        placeholder="200"
+                        required
+                    >
+
+                </div>
+
+
+            </div>
+
+
+            <button type="submit">
+                🔍 Recommend Crop
+            </button>
+
+        </form>
+
+
+        <!-- RESULT -->
+
+        {% if prediction %}
+
+        <div class="result">
+
+            <span class="result-icon">
+                🌱
+            </span>
+
+            <h3>
+                Recommended Crop
+            </h3>
+
+            <div class="crop-name">
+                {{ prediction }}
+            </div>
+
+
+            {% if probability %}
+
+            <p>
+                Prediction Confidence:
+                <strong>
+                    {{ probability }}%
+                </strong>
+            </p>
+
+            {% endif %}
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ERROR -->
+
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+    </main>
+
+
+    <!-- FEATURE IMPORTANCE -->
+
+    <div class="feature-card">
+
+        <h2>
+            📊 Feature Importance
+        </h2>
+
+        <p>
+            Importance of each input feature used by
+            the Random Forest model.
+        </p>
+
+
+        {% for feature, value in feature_importance.items() %}
+
+        <div class="feature-row">
+
+
+            <div class="feature-name">
+                {{ feature }}
+            </div>
+
+
+            <!-- Feature Bar -->
+
+            <div class="bar">
+
+                <span
+                    class="bar-fill"
+                    data-width="{{ value * 100 }}">
+                </span>
+
+            </div>
+
+
+            <div class="feature-value">
+                {{ "%.2f"|format(value * 100) }}%
+            </div>
+
+
+        </div>
+
+        {% endfor %}
+
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <p>
+            Machine Learning • Random Forest •
+            Python • Flask • Scikit-learn
+        </p>
+
+    </footer>
+
+
+</div>
+
+
+<!-- JavaScript -->
+
+<script>
+
+    document
+        .querySelectorAll(".bar-fill")
+        .forEach(function(bar) {
+
+            bar.style.width =
+                bar.dataset.width + "%";
+
+        });
+
+</script>
+
+
+</body>
+
+</html>
